@@ -171,3 +171,142 @@ function getAllReviewComments(products) {
 }
  
 console.log(getAllReviewComments(nestedProducts));
+
+// Jumat, 11-9-2026
+
+const titles = nestedProducts.map((p) => p.title);
+console.log(titles);
+ 
+const expensiveProducts = nestedProducts.filter((p) => p.price > 500);
+console.log(expensiveProducts);
+ 
+const totalStockAll = nestedProducts.reduce((sum, p) => sum + p.stock, 0);
+console.log(totalStockAll);
+ 
+const laptopPrices = nestedProducts
+  .filter((p) => p.category === "laptops")
+  .map((p) => p.price);
+ 
+const avgLaptopPrice =
+  laptopPrices.reduce((a, b) => a + b, 0) / laptopPrices.length;
+ 
+console.log(avgLaptopPrice);
+ 
+function getStatistics(products) {
+  const totalProducts = products.length;
+  const prices = products.map((p) => p.price);
+  const ratings = products.map((p) => p.rating);
+ 
+  const averagePrice = prices.reduce((a, b) => a + b, 0) / totalProducts;
+  const highestPrice = Math.max(...prices);
+  const lowestPrice = Math.min(...prices);
+  const totalStock = products.reduce((sum, p) => sum + p.stock, 0);
+  const averageRating = ratings.reduce((a, b) => a + b, 0) / totalProducts;
+ 
+  return {
+    totalProducts,
+    averagePrice,
+    highestPrice,
+    lowestPrice,
+    totalStock,
+    averageRating,
+  };
+}
+ 
+console.log(getStatistics(nestedProducts));
+ 
+function linearSearch(array, target) {
+  for (let i = 0; i < array.length; i++) {
+    if (array[i] === target) return i;
+  }
+  return -1;
+}
+ 
+console.log(linearSearch([5, 3, 8, 1], 8)); 
+ 
+function linearSearchProductById(products, id) {
+  for (let i = 0; i < products.length; i++) {
+    if (products[i].id === id) return i; 
+  }
+  return -1;
+}
+ 
+console.log(linearSearchProductById(nestedProducts, 2));
+ 
+function binarySearch(arr, target) {
+  let left = 0;
+  let right = arr.length - 1;
+ 
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2);
+ 
+    if (arr[mid] === target) return mid;
+    if (arr[mid] < target) left = mid + 1;
+    else right = mid - 1;
+  }
+ 
+  return -1;
+}
+ 
+console.log(binarySearch([1, 3, 5, 8, 10, 20], 10)); // index 4
+ 
+function binarySearchByPrice(sortedProducts, targetPrice) {
+  let left = 0;
+  let right = sortedProducts.length - 1;
+ 
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2);
+ 
+    if (sortedProducts[mid].price === targetPrice) return sortedProducts[mid];
+    if (sortedProducts[mid].price < targetPrice) left = mid + 1;
+    else right = mid - 1;
+  }
+ 
+  return null;
+}
+ 
+const sortedByPrice = [...nestedProducts].sort((a, b) => a.price - b.price);
+console.log(binarySearchByPrice(sortedByPrice, 800));
+ 
+const numbers = [5, 3, 8, 1];
+console.log([...numbers].sort((a, b) => a - b)); // ascending
+console.log([...numbers].sort((a, b) => b - a)); // descending
+ 
+console.log(
+  [...nestedProducts].sort((a, b) => a.price - b.price).map((p) => p.title)
+);
+ 
+function bubbleSort(numbers) {
+  const arr = [...numbers];
+ 
+  for (let i = 0; i < arr.length - 1; i++) {
+    for (let j = 0; j < arr.length - 1 - i; j++) {
+      if (arr[j] > arr[j + 1]) {
+        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+      }
+    }
+  }
+ 
+  return arr;
+}
+ 
+console.log(bubbleSort([5, 3, 8, 1]));
+ 
+function sortProducts(products, sortBy) {
+  const arr = [...products]; 
+ 
+  switch (sortBy) {
+    case "price-asc":
+      return arr.sort((a, b) => a.price - b.price);
+    case "price-desc":
+      return arr.sort((a, b) => b.price - a.price);
+    case "rating":
+      return arr.sort((a, b) => b.rating - a.rating);
+    case "title":
+      return arr.sort((a, b) => a.title.localeCompare(b.title));
+    default:
+      return arr;
+  }
+}
+ 
+console.log(sortProducts(nestedProducts, "price-desc").map((p) => p.title));
