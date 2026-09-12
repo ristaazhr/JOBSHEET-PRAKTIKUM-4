@@ -248,7 +248,7 @@ function binarySearch(arr, target) {
   return -1;
 }
  
-console.log(binarySearch([1, 3, 5, 8, 10, 20], 10)); // index 4
+console.log(binarySearch([1, 3, 5, 8, 10, 20], 10)); 
  
 function binarySearchByPrice(sortedProducts, targetPrice) {
   let left = 0;
@@ -269,8 +269,8 @@ const sortedByPrice = [...nestedProducts].sort((a, b) => a.price - b.price);
 console.log(binarySearchByPrice(sortedByPrice, 800));
  
 const numbers = [5, 3, 8, 1];
-console.log([...numbers].sort((a, b) => a - b)); // ascending
-console.log([...numbers].sort((a, b) => b - a)); // descending
+console.log([...numbers].sort((a, b) => a - b)); 
+console.log([...numbers].sort((a, b) => b - a)); 
  
 console.log(
   [...nestedProducts].sort((a, b) => a.price - b.price).map((p) => p.title)
@@ -310,3 +310,128 @@ function sortProducts(products, sortBy) {
 }
  
 console.log(sortProducts(nestedProducts, "price-desc").map((p) => p.title));
+
+// Sabtu, 12-09-2026
+
+//  Bagian 9 — Grouping & Aggregat
+function groupByCategory(products) {
+  return products.reduce((groups, product) => {
+    const key = product.category;
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(product);
+    return groups;
+  }, {});
+}
+
+const grouped = groupByCategory(nestedProducts);
+console.log(grouped);
+
+function summarizeCategoryCounts(products) {
+  const grouped = groupByCategory(products);
+  return Object.entries(grouped).map(([category, items]) => ({
+    category,
+    total: items.length,
+  }));
+}
+
+console.table(summarizeCategoryCounts(nestedProducts));
+
+//  Bagian 10 — Frequency Counting 
+function countFrequency(array) {
+  return array.reduce((counts, item) => {
+    counts[item] = (counts[item] || 0) + 1;
+    return counts;
+  }, {});
+}
+
+const categoryFreq = countFrequency(nestedProducts.map((p) => p.category));
+console.log("categoryFreq:", categoryFreq);
+
+const allTags = nestedProducts.flatMap((p) => p.tags);
+const tagFreq = countFrequency(allTags);
+console.log("tagFreq:", tagFreq);
+
+const roundedRatings = nestedProducts.map((p) => Math.round(p.rating));
+const ratingFreq = countFrequency(roundedRatings);
+console.log("ratingFreq:", ratingFreq);
+
+const brandFreq = countFrequency(nestedProducts.map((p) => p.brand));
+console.log("brandFreq:", brandFreq);
+
+//  Bagian 11 — Set 
+const uniqueCategories = [...new Set(nestedProducts.map((p) => p.category))];
+console.log("uniqueCategories:", uniqueCategories);
+
+const uniqueBrands = [...new Set(nestedProducts.map((p) => p.brand))];
+console.log("uniqueBrands:", uniqueBrands);
+
+const uniqueTags = [...new Set(nestedProducts.flatMap((p) => p.tags))];
+console.log("uniqueTags:", uniqueTags);
+
+//  Bagian 12 — Map (Struktur Data) 
+function buildProductLookup(products) {
+  const map = new Map();
+  for (const product of products) {
+    map.set(product.id, product);
+  }
+  return map;
+}
+
+const productLookup = buildProductLookup(nestedProducts);
+
+console.log("get(2):", productLookup.get(2));      // ada isinya
+console.log("get(10):", productLookup.get(10));    // undefined, id 10 tidak ada
+console.log("has(10):", productLookup.has(10));    // false
+console.log("size:", productLookup.size);          // 3
+
+for (const [id, product] of productLookup) {
+  console.log(id, product.title);
+}
+
+//  Bagian 13 — Stack (LIFO) 
+class Stack {
+  constructor() {
+    this.items = [];
+  }
+  push(item) {
+    this.items.push(item);
+  }
+  pop() {
+    return this.items.pop();
+  }
+  peek() {
+    return this.items[this.items.length - 1];
+  }
+  isEmpty() {
+    return this.items.length === 0;
+  }
+  size() {
+    return this.items.length;
+  }
+}
+
+const searchHistory = new Stack();
+
+function performSearch(keyword) {
+  searchHistory.push(keyword);
+  console.log(`Mencari: ${keyword}`);
+}
+
+function undoSearch() {
+  if (searchHistory.isEmpty()) {
+    console.log("Tidak ada riwayat pencarian.");
+    return null;
+  }
+  const lastSearch = searchHistory.pop();
+  const previousSearch = searchHistory.peek();
+  console.log(
+    `Undo dari "${lastSearch}" kembali ke "${previousSearch ?? "(kosong)"}"`
+  );
+  return previousSearch;
+}
+
+performSearch("laptop");
+performSearch("phone");
+performSearch("tablet");
+
+undoSearch();
