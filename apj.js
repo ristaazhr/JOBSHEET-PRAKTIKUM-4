@@ -435,3 +435,197 @@ performSearch("phone");
 performSearch("tablet");
 
 undoSearch();
+
+// Minggu, 13-09-2026
+
+// Bagian 14 — Queue (FIFO) 
+class Queue {
+  constructor() {
+    this.items = [];
+  }
+  enqueue(item) {
+    this.items.push(item);
+  }
+  dequeue() {
+    return this.items.shift();
+  }
+  peek() {
+    return this.items[0];
+  }
+  isEmpty() {
+    return this.items.length === 0;
+  }
+  size() {
+    return this.items.length;
+  }
+}
+
+const requestQueue = new Queue();
+
+function addRequest(requestName) {
+  requestQueue.enqueue(requestName);
+  console.log(`Request masuk: ${requestName}`);
+}
+
+function processNextRequest() {
+  if (requestQueue.isEmpty()) {
+    console.log("Tidak ada request yang menunggu.");
+    return null;
+  }
+  const current = requestQueue.dequeue();
+  console.log(`Memproses: ${current}`);
+  return current;
+}
+
+addRequest("Get Products");
+addRequest("Get Reviews");
+addRequest("Get Categories");
+
+processNextRequest(); 
+processNextRequest();
+console.log("Sisa antrean:", requestQueue.items);
+
+// ===== Bagian 15 — Recursion =====
+
+function countdown(n) {
+  if (n <= 0) {
+    console.log("Selesai");
+    return;
+  }
+  console.log(n);
+  countdown(n - 1);
+}
+
+countdown(5);
+
+const categoryTree = [
+  {
+    name: "Electronics",
+    children: [
+      {
+        name: "Computers",
+        children: [
+          { name: "Laptop", children: [] },
+          { name: "Desktop", children: [] },
+        ],
+      },
+      { name: "Phone", children: [] },
+    ],
+  },
+  {
+    name: "Audio",
+    children: [{ name: "Headphones", children: [] }],
+  },
+];
+
+function printCategories(categories, depth = 0) {
+  for (const category of categories) {
+    console.log(" ".repeat(depth * 2) + category.name);
+    if (category.children.length > 0) {
+      printCategories(category.children, depth + 1);
+    }
+  }
+}
+
+printCategories(categoryTree);
+
+// Bagian 16 — Algorithm Complexity (Big-O secara Praktis) 
+
+function linearSearchCountSteps(array, target) {
+  let steps = 0;
+  for (let i = 0; i < array.length; i++) {
+    steps++;
+    if (array[i] === target) return { index: i, steps };
+  }
+  return { index: -1, steps };
+}
+
+function binarySearchCountSteps(sortedArray, target) {
+  let steps = 0;
+  let left = 0;
+  let right = sortedArray.length - 1;
+
+  while (left <= right) {
+    steps++;
+    const mid = Math.floor((left + right) / 2);
+    if (sortedArray[mid] === target) return { index: mid, steps };
+    if (sortedArray[mid] < target) left = mid + 1;
+    else right = mid - 1;
+  }
+  return { index: -1, steps };
+}
+
+const bigSortedArray = Array.from({ length: 10000 }, (_, i) => i + 1);
+const target = 9999;
+
+console.log("Linear search:", linearSearchCountSteps(bigSortedArray, target));
+console.log("Binary search:", binarySearchCountSteps(bigSortedArray, target));
+
+function generateLargeDataset(size) {
+  const dataset = [];
+  for (let i = 1; i <= size; i++) {
+    dataset.push({
+      id: i,
+      title: `Product ${i}`,
+      category: `category-${i % 20}`,
+      price: Math.floor(Math.random() * 1000),
+    });
+  }
+  return dataset;
+}
+
+const largeDataset = generateLargeDataset(1000);
+
+function countSameCategoryPairsNested(products) {
+  let count = 0;
+  for (let i = 0; i < products.length; i++) {
+    for (let j = i + 1; j < products.length; j++) {
+      if (products[i].category === products[j].category) count++;
+    }
+  }
+  return count;
+}
+
+function countSameCategoryPairsGrouped(products) {
+  const groups = {};
+  for (const p of products) {
+    if (!groups[p.category]) groups[p.category] = 0;
+    groups[p.category]++;
+  }
+  
+  let count = 0;
+  for (const key in groups) {
+    const n = groups[key];
+    count += (n * (n - 1)) / 2;
+  }
+  return count;
+}
+
+const startNested = performance.now();
+const resultNested = countSameCategoryPairsNested(largeDataset);
+const endNested = performance.now();
+
+const startGrouped = performance.now();
+const resultGrouped = countSameCategoryPairsGrouped(largeDataset);
+const endGrouped = performance.now();
+
+console.log(`Nested loop: ${resultNested} pasangan, waktu: ${(endNested - startNested).toFixed(3)} ms`);
+console.log(`Grouped: ${resultGrouped} pasangan, waktu: ${(endGrouped - startGrouped).toFixed(3)} ms`);
+
+// Bagian 17 — DOM Manipulation 
+
+function renderProducts(products) {
+  const container = document.querySelector("#product-list");
+  container.innerHTML = "";
+  for (const product of products) {
+    const card = document.createElement("div");
+    card.classList.add("product-card");
+    card.innerHTML = `
+      <h3>${product.title}</h3>
+      <p>${product.category}</p>
+      <p>Harga: $${product.price}</p>
+      <p>Rating: ${product.rating}</p>
+    `;
+    container.append(card);
+  }
+}
