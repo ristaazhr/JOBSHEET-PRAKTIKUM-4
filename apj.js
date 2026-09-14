@@ -612,8 +612,7 @@ const endGrouped = performance.now();
 console.log(`Nested loop: ${resultNested} pasangan, waktu: ${(endNested - startNested).toFixed(3)} ms`);
 console.log(`Grouped: ${resultGrouped} pasangan, waktu: ${(endGrouped - startGrouped).toFixed(3)} ms`);
 
-// Bagian 17 — DOM Manipulation 
-
+//  Bagian 17 — DOM Manipulation 
 function renderProducts(products) {
   const container = document.querySelector("#product-list");
   container.innerHTML = "";
@@ -629,3 +628,134 @@ function renderProducts(products) {
     container.append(card);
   }
 }
+
+// Senin, 14-09-2026
+
+//  Bagian 18 — State Management 
+const state = {
+  products: nestedProducts,
+  search: "",
+  category: "all",
+  sortBy: "default",
+  favorites: [],
+  status: "idle",
+};
+
+function render() {
+  let result = [...state.products];
+
+  if (state.search) {
+    const keyword = state.search.toLowerCase();
+    result = result.filter((p) => p.title.toLowerCase().includes(keyword));
+  }
+
+  if (state.category !== "all") {
+    result = result.filter((p) => p.category === state.category);
+  }
+
+  switch (state.sortBy) {
+    case "price-asc":
+      result.sort((a, b) => a.price - b.price);
+      break;
+    case "price-desc":
+      result.sort((a, b) => b.price - a.price);
+      break;
+    case "rating":
+      result.sort((a, b) => b.rating - a.rating);
+      break;
+    case "title":
+      result.sort((a, b) => a.title.localeCompare(b.title));
+      break;
+  }
+
+  state.status = result.length === 0 ? "empty" : "success";
+
+  renderProducts(result);
+}
+
+render();
+
+//  Bagian 19 — Event Handling 
+
+const searchInput = document.querySelector("#search-input");
+searchInput.addEventListener("input", (e) => {
+  state.search = e.target.value;
+  render();
+});
+
+const categorySelect = document.querySelector("#category-select");
+categorySelect.addEventListener("change", (e) => {
+  state.category = e.target.value;
+  render();
+});
+
+const sortSelect = document.querySelector("#sort-select");
+sortSelect.addEventListener("change", (e) => {
+  state.sortBy = e.target.value;
+  render();
+});
+
+// Bagian 20 — Modern JavaScript (ES6+) 
+
+const label = (product) => `${product.title} - $${product.price}`;
+console.log(label(nestedProducts[0]));
+
+const getTitle = (product) => product.title;
+console.log(getTitle(nestedProducts[0]));
+
+const { title, price, category } = nestedProducts[0];
+console.log(title, price, category);
+
+const [firstProduct, ...restProducts] = nestedProducts;
+console.log(firstProduct.title, restProducts.length);
+
+const updatedProduct = { ...nestedProducts[0], stock: 20 };
+console.log(updatedProduct);
+
+const newProduct = {
+  id: 4,
+  title: "Tablet",
+  brand: "Apple",
+  price: 400,
+  rating: 4.1,
+  stock: 8,
+  category: "tablets",
+  tags: ["mobile"],
+};
+const merged = [...nestedProducts, newProduct];
+console.log("Total setelah merge:", merged.length);
+
+// Rest parameter
+function sumPrices(...prices) {
+  return prices.reduce((a, b) => a + b, 0);
+}
+console.log(sumPrices(100, 200, 300));
+
+const width = nestedProducts[0].dimensions?.width ?? "Tidak diketahui";
+console.log(width);
+
+const noDimensions = { title: "Test" };
+const heightSafe = noDimensions.dimensions?.height ?? "Tidak diketahui";
+console.log(heightSafe); 
+
+function filterByCategory(products, category = "all") {
+  if (category === "all") return products;
+  return products.filter((p) => p.category === category);
+}
+console.log(filterByCategory(nestedProducts, "phones"));
+
+function getStatistics(products) {
+  const totalProducts = products.length;
+  const prices = products.map(({ price }) => price);
+  const ratings = products.map(({ rating }) => rating ?? 0);
+
+  const averagePrice = prices.reduce((a, b) => a + b, 0) / totalProducts;
+  const highestPrice = Math.max(...prices);
+  const lowestPrice = Math.min(...prices);
+  const totalStock = products.reduce((sum, { stock }) => sum + stock, 0);
+  const averageRating = ratings.reduce((a, b) => a + b, 0) / totalProducts;
+
+  return { totalProducts, averagePrice, highestPrice, lowestPrice, totalStock, averageRating };
+}
+
+console.log(getStatistics(nestedProducts));

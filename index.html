@@ -5,31 +5,25 @@
   <title>Product Explorer</title>
 </head>
 <body>
+  <input type="text" id="search-input" placeholder="Cari produk..." />
+
+  <select id="category-select">
+    <option value="all">Semua Kategori</option>
+    <option value="laptops">Laptops</option>
+    <option value="phones">Phones</option>
+    <option value="audio">Audio</option>
+  </select>
+
+  <select id="sort-select">
+    <option value="default">Default</option>
+    <option value="price-asc">Harga Terendah</option>
+    <option value="price-desc">Harga Tertinggi</option>
+    <option value="rating">Rating Tertinggi</option>
+    <option value="title">Nama (A-Z)</option>
+  </select>
+
   <div id="product-list"></div>
 
-  <script>
-    const nestedProducts = [
-      { id: 1, title: "Laptop", price: 1200, rating: 4.5, category: "laptops" },
-      { id: 2, title: "Smartphone", price: 800, rating: 4.2, category: "phones" },
-      { id: 3, title: "Headphones", price: 100, rating: 4.0, category: "audio" },
-    ];
-
-    function renderProducts(products) {
-      const container = document.querySelector("#product-list");
-      container.innerHTML = "";
-      for (const product of products) {
-        const card = document.createElement("div");
-        card.innerHTML = `
-          <h3>${product.title}</h3>
-          <p>${product.category}</p>
-          <p>Harga: $${product.price}</p>
-          <p>Rating: ${product.rating}</p>
-        `;
-        container.append(card);
-      }
-    }
-
-    renderProducts(nestedProducts);
-  </script>
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>

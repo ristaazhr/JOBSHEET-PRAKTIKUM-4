@@ -1,0 +1,46 @@
+// js/data.js
+export const nestedProducts = [
+  {
+    id: 1,
+    title: "Laptop",
+    brand: "Dell",
+    price: 1200,
+    rating: 4.5,
+    stock: 10,
+    category: "laptops",
+    tags: ["computer", "electronics", "office"],
+    dimensions: { width: 30, height: 2, depth: 20 },
+    reviews: [
+      { user: "A", rating: 5, comment: "Good product" },
+      { user: "B", rating: 4, comment: "Worth it" },
+    ],
+  },
+  {
+    id: 2,
+    title: "Smartphone",
+    brand: "Samsung",
+    price: 800,
+    rating: 4.2,
+    stock: 15,
+    category: "phones",
+    tags: ["mobile", "electronics"],
+    dimensions: { width: 7, height: 0.8, depth: 15 },
+    reviews: [
+      { user: "C", rating: 4, comment: "Nice camera" },
+      { user: "D", rating: 5, comment: "Fast" },
+      { user: "E", rating: 3, comment: "Battery so-so" },
+    ],
+  },
+  {
+    id: 3,
+    title: "Headphones",
+    brand: "Sony",
+    price: 100,
+    rating: 4.0,
+    stock: 3,
+    category: "audio",
+    tags: ["audio", "electronics"],
+    dimensions: { width: 18, height: 20, depth: 8 },
+    reviews: [{ user: "F", rating: 4, comment: "Sound is decent" }],
+  },
+];
