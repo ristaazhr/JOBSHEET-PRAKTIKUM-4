@@ -1,5 +1,3 @@
-// js/state.js
-
 export const state = {
   products: [],
   search: "",

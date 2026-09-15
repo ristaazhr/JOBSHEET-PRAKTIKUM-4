@@ -755,3 +755,163 @@ Promise.all([
   .catch((error) => {
     console.error("Salah satu gagal:", error);
   });
+
+  // Rabu, 16-09-2026
+
+  // Bagian 23 — Async/Await 
+
+async function loadProduct(id, shouldFail = false) {
+  try {
+    const product = await simulateFetchProduct(id, shouldFail);
+    console.log("Produk berhasil dimuat:", product);
+    return product;
+  } catch (error) {
+    console.error("Gagal memuat produk:", error);
+  } finally {
+    console.log(`Selesai memproses produk id ${id}`);
+  }
+}
+
+loadProduct(10);
+loadProduct(11, true); 
+
+const simpleState = {
+  products: [],
+  status: "idle",
+};
+
+async function loadProducts() {
+  simpleState.status = "loading";
+  console.log("Status:", simpleState.status);
+
+  try {
+    const product1 = await simulateFetchProduct(1);
+    const product2 = await simulateFetchProduct(2);
+    simpleState.products = [product1, product2];
+    simpleState.status = "success";
+  } catch (error) {
+    simpleState.status = "error";
+    console.error(error);
+  } finally {
+    console.log("Status akhir:", simpleState.status);
+    console.log("Products:", simpleState.products);
+  }
+}
+
+loadProducts();
+
+async function loadProductsSequential() {
+  console.log("--- Mulai loading sequential ---");
+  const p1 = await simulateFetchProduct(20);
+  console.log("Dapat:", p1.title);
+  const p2 = await simulateFetchProduct(21);
+  console.log("Dapat:", p2.title);
+  console.log("--- Selesai loading sequential ---");
+}
+
+loadProductsSequential();
+
+async function loadProductsParallel() {
+  console.log("--- Mulai loading parallel ---");
+  const [p1, p2] = await Promise.all([
+    simulateFetchProduct(30),
+    simulateFetchProduct(31),
+  ]);
+  console.log("Keduanya selesai:", p1.title, p2.title);
+  console.log("--- Selesai loading parallel ---");
+}
+
+loadProductsParallel();
+
+// Bagian 24 — Fetch API dan DummyJSON 
+
+async function fetchProducts() {
+  try {
+    const response = await fetch("https://dummyjson.com/products?limit=30");
+    if (!response.ok) {
+      throw new Error(`HTTP error: ${response.status}`);
+    }
+    const data = await response.json();
+    return data.products; 
+  } catch (error) {
+    console.error("Gagal mengambil data:", error);
+    throw error;
+  }
+}
+
+async function testFetchProducts() {
+  console.log("Mengambil data dari DummyJSON...");
+  const products = await fetchProducts();
+  console.log(`Berhasil mengambil ${products.length} produk`);
+  console.log("Contoh produk pertama:", products[0]);
+}
+
+testFetchProducts();
+
+// Bagian 25 — API Data Processing 
+
+async function getApiStatistics() {
+  const products = await fetchProducts();
+
+  const totalProducts = products.length;
+  const prices = products.map((p) => p.price);
+  const ratings = products.map((p) => p.rating);
+
+  const averagePrice = prices.reduce((a, b) => a + b, 0) / totalProducts;
+  const highestPrice = Math.max(...prices);
+  const lowestPrice = Math.min(...prices);
+  const totalStock = products.reduce((sum, p) => sum + p.stock, 0);
+  const averageRating = ratings.reduce((a, b) => a + b, 0) / totalProducts;
+
+  return { totalProducts, averagePrice, highestPrice, lowestPrice, totalStock, averageRating };
+}
+
+getApiStatistics().then((stats) => console.log("Statistics:", stats));
+
+async function getCategoryAnalytics() {
+  const products = await fetchProducts();
+
+  const grouped = products.reduce((groups, product) => {
+    const key = product.category;
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(product);
+    return groups;
+  }, {});
+
+  return Object.entries(grouped).map(([category, items]) => {
+    const prices = items.map((p) => p.price);
+    const ratings = items.map((p) => p.rating);
+    return {
+      category,
+      totalProducts: items.length,
+      averagePrice: prices.reduce((a, b) => a + b, 0) / items.length,
+      averageRating: ratings.reduce((a, b) => a + b, 0) / items.length,
+      totalStock: items.reduce((sum, p) => sum + p.stock, 0),
+    };
+  });
+}
+
+getCategoryAnalytics().then((analytics) => console.table(analytics));
+
+function exactSearch(products, title) {
+  return products.filter((p) => p.title === title);
+}
+
+function partialSearch(products, keyword) {
+  return products.filter((p) => p.title.includes(keyword));
+}
+
+function caseInsensitiveSearch(products, keyword) {
+  const lower = keyword.toLowerCase();
+  return products.filter((p) => p.title.toLowerCase().includes(lower));
+}
+
+async function testSearchModes() {
+  const products = await fetchProducts();
+
+  console.log("Exact search 'iPhone 9':", exactSearch(products, "iPhone 9"));
+  console.log("Partial search 'phone':", partialSearch(products, "phone").map((p) => p.title));
+  console.log("Case-insensitive 'IPHONE':", caseInsensitiveSearch(products, "IPHONE").map((p) => p.title));
+}
+
+testSearchModes();

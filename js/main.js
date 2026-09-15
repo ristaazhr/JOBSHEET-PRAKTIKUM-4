@@ -1,20 +1,37 @@
-// js/main.js
-
-import { nestedProducts } from "./data.js";
-import { groupByCategory } from "./algorithms.js";
+import { fetchProducts } from "./api.js";
+import { getStatistics } from "./algorithms.js";
 import { state } from "./state.js";
-import { render } from "./ui.js";
+import { render, renderStatistics, renderCategoryOptions } from "./ui.js";
+import { debounce } from "./utils.js";
 
-state.products = nestedProducts;
+async function init() {
+  state.status = "loading";
+  render(state);
 
-render(state);
+  try {
+    const products = await fetchProducts();
+    state.products = products;
+    state.status = "success";
+    renderCategoryOptions(products);
+    render(state);
+    renderStatistics(getStatistics(products));
+  } catch (error) {
+    state.status = "error";
+    render(state);
+    console.error("Gagal memuat produk:", error);
+  }
+}
 
-console.log("Grouped:", groupByCategory(state.products));
+init();
 
 const searchInput = document.querySelector("#search-input");
-searchInput.addEventListener("input", (e) => {
-  state.search = e.target.value;
+const debouncedSearch = debounce((value) => {
+  state.search = value;
   render(state);
+}, 300);
+
+searchInput.addEventListener("input", (e) => {
+  debouncedSearch(e.target.value);
 });
 
 const categorySelect = document.querySelector("#category-select");

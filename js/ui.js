@@ -1,4 +1,4 @@
-// js/ui.js
+import { formatCurrency, formatRating, capitalize } from "./utils.js";
 
 export function renderProducts(products) {
   const container = document.querySelector("#product-list");
@@ -8,15 +8,56 @@ export function renderProducts(products) {
     card.classList.add("product-card");
     card.innerHTML = `
       <h3>${product.title}</h3>
-      <p>${product.category}</p>
-      <p>Harga: $${product.price}</p>
-      <p>Rating: ${product.rating}</p>
+      <p>${capitalize(product.category)}</p>
+      <p>Harga: ${formatCurrency(product.price)}</p>
+      <p>Rating: ${formatRating(product.rating)}</p>
     `;
     container.append(card);
   }
 }
 
+export function renderStatistics(stats) {
+  const container = document.querySelector("#statistics");
+  if (!container) return;
+  container.innerHTML = `
+    <p>Total Produk: ${stats.totalProducts}</p>
+    <p>Rata-rata Harga: ${formatCurrency(stats.averagePrice)}</p>
+    <p>Total Stock: ${stats.totalStock}</p>
+    <p>Rata-rata Rating: ${formatRating(stats.averageRating)}</p>
+  `;
+}
+
+export function renderStatus(status) {
+  const container = document.querySelector("#product-list");
+  if (status === "loading") {
+    container.innerHTML = "<p>Memuat data...</p>";
+  } else if (status === "error") {
+    container.innerHTML = "<p>Gagal memuat data. Silakan coba lagi.</p>";
+  } else if (status === "empty") {
+    container.innerHTML = "<p>Produk tidak ditemukan.</p>";
+  }
+}
+
+export function renderCategoryOptions(products) {
+  const select = document.querySelector("#category-select");
+  const uniqueCategories = [...new Set(products.map((p) => p.category))];
+
+  select.innerHTML = `<option value="all">Semua Kategori</option>`;
+
+  for (const category of uniqueCategories) {
+    const option = document.createElement("option");
+    option.value = category;
+    option.textContent = capitalize(category);
+    select.append(option);
+  }
+}
+
 export function render(state) {
+  if (state.status === "loading" || state.status === "error") {
+    renderStatus(state.status);
+    return;
+  }
+
   let result = [...state.products];
 
   if (state.search) {
@@ -45,5 +86,9 @@ export function render(state) {
 
   state.status = result.length === 0 ? "empty" : "success";
 
-  renderProducts(result);
+  if (state.status === "empty") {
+    renderStatus("empty");
+  } else {
+    renderProducts(result);
+  }
 }

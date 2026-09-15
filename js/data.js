@@ -1,4 +1,3 @@
-// js/data.js
 export const nestedProducts = [
   {
     id: 1,
