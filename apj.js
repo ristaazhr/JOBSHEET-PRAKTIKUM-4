@@ -631,70 +631,6 @@ function renderProducts(products) {
 
 // Senin, 14-09-2026
 
-//  Bagian 18 — State Management 
-const state = {
-  products: nestedProducts,
-  search: "",
-  category: "all",
-  sortBy: "default",
-  favorites: [],
-  status: "idle",
-};
-
-function render() {
-  let result = [...state.products];
-
-  if (state.search) {
-    const keyword = state.search.toLowerCase();
-    result = result.filter((p) => p.title.toLowerCase().includes(keyword));
-  }
-
-  if (state.category !== "all") {
-    result = result.filter((p) => p.category === state.category);
-  }
-
-  switch (state.sortBy) {
-    case "price-asc":
-      result.sort((a, b) => a.price - b.price);
-      break;
-    case "price-desc":
-      result.sort((a, b) => b.price - a.price);
-      break;
-    case "rating":
-      result.sort((a, b) => b.rating - a.rating);
-      break;
-    case "title":
-      result.sort((a, b) => a.title.localeCompare(b.title));
-      break;
-  }
-
-  state.status = result.length === 0 ? "empty" : "success";
-
-  renderProducts(result);
-}
-
-render();
-
-//  Bagian 19 — Event Handling 
-
-const searchInput = document.querySelector("#search-input");
-searchInput.addEventListener("input", (e) => {
-  state.search = e.target.value;
-  render();
-});
-
-const categorySelect = document.querySelector("#category-select");
-categorySelect.addEventListener("change", (e) => {
-  state.category = e.target.value;
-  render();
-});
-
-const sortSelect = document.querySelector("#sort-select");
-sortSelect.addEventListener("change", (e) => {
-  state.sortBy = e.target.value;
-  render();
-});
-
 // Bagian 20 — Modern JavaScript (ES6+) 
 
 const label = (product) => `${product.title} - $${product.price}`;
@@ -759,3 +695,63 @@ function getStatistics(products) {
 }
 
 console.log(getStatistics(nestedProducts));
+
+// Selasa, 15-09-2026
+
+// Bagian 22 — Promise 
+
+const promise = new Promise((resolve, reject) => {
+  const success = true;
+  if (success) resolve("Data berhasil diambil");
+  else reject("Terjadi error");
+});
+
+promise
+  .then((result) => console.log(result))
+  .catch((error) => console.error(error))
+  .finally(() => console.log("Selesai, apa pun hasilnya"));
+
+function simulateFetchProduct(id, shouldFail = false) {
+  return new Promise((resolve, reject) => {
+    console.log(`Mengambil produk dengan id ${id}...`);
+    setTimeout(() => {
+      if (shouldFail) {
+        reject(`Gagal mengambil produk dengan id ${id}`);
+      } else {
+        resolve({ id, title: `Produk ${id}`, price: 100 * id });
+      }
+    }, 1000); 
+  });
+}
+
+simulateFetchProduct(1)
+  .then((product) => console.log("Sukses:", product))
+  .catch((error) => console.error("Error:", error))
+  .finally(() => console.log("Request untuk produk 1 selesai"));
+
+simulateFetchProduct(2, true)
+  .then((product) => console.log("Sukses:", product))
+  .catch((error) => console.error("Error:", error))
+  .finally(() => console.log("Request untuk produk 2 selesai"));
+
+simulateFetchProduct(3)
+  .then((product) => {
+    console.log("Produk diterima:", product);
+    return product.price * 0.9; 
+  })
+  .then((discountedPrice) => {
+    console.log("Harga setelah diskon:", discountedPrice);
+  })
+  .catch((error) => console.error("Error di salah satu tahap:", error));
+
+Promise.all([
+  simulateFetchProduct(4),
+  simulateFetchProduct(5),
+  simulateFetchProduct(6),
+])
+  .then((products) => {
+    console.log("Semua produk berhasil diambil:", products);
+  })
+  .catch((error) => {
+    console.error("Salah satu gagal:", error);
+  });
